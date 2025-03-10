@@ -72,9 +72,6 @@ const createElement = (type, props = {}, ...childrenElements) => {
 //---------------------------------------------//
 
 const updateLinkedElement = (oldFiber, newFiber, host) => {
-  if (oldFiber?.type === "button") {
-    console.log("213123", oldFiber);
-  }
   if (!oldFiber) {
     newFiber.parent = host;
     if (newFiber.tag === 2) {
@@ -96,7 +93,6 @@ const updateLinkedElement = (oldFiber, newFiber, host) => {
     return newFiber;
   }
 
-  if (oldFiber) {
     if (oldFiber.type === newFiber.type && oldFiber.tag === 2) {
       updateDomProps(oldFiber.dom, oldFiber.props, newFiber.props);
       newFiber.alternative = oldFiber;
@@ -128,13 +124,8 @@ const updateLinkedElement = (oldFiber, newFiber, host) => {
       host.dom.replaceChild(dom, oldFiber.dom);
       return newFiber;
     }
-    // if (oldFiber.type === newFiber.type) {
-    // if (oldFiber.tag === 1) {
-    // return { ...oldFiber, ...newFiber };
-    // }/
-    // }
+   
     return { ...oldFiber, ...newFiber };
-  }
 };
 
 const updateLinkedList = (fiber, children) => {
@@ -183,6 +174,7 @@ function updateDomProps(dom, prev, next) {
     Object.entries(next).forEach(([propety, value]) => (dom[propety] = value));
     return;
   }
+  
 }
 
 const doWork = (fiber) => {
@@ -206,7 +198,7 @@ const doWork = (fiber) => {
 };
 
 const mountChildren = (fiber) => {
-  [...fiber.children].forEach((element) => {
+  fiber.children.forEach((element) => {
     if (element.dom) {
       fiber.dom.appendChild(element.dom);
     } else {
@@ -240,7 +232,6 @@ const removeChildren = (fiber) => {
 };
 
 const commit = () => {
-  console.log(globalStack);
   for (let i = 0; i < globalStack.length; i++) {
     const { fiber, type } = globalStack[i];
     if (type === 0) {
@@ -297,7 +288,6 @@ const workLoop = (fiber) => {
         if (currentNode.tag === 0 || currentNode === root) {
           hasWork = false;
           commit();
-          console.log(root);
           return;
         }
         currentNode = currentNode.parent;
@@ -332,40 +322,6 @@ function useState(init) {
   return hook;
 }
 
-// export { createElement, createRoot, useState };
-
-/// todo неправильно ходит по sibling
+export { createElement, createRoot, useState };
 
 
-
-const root1 = document.getElementById("root");
-
-render(createElement(App), root1);
-
-
-// import { createElement, useState } from "./react/core.js";
-const arr = [1, 2, 3, 4];
-
-const Component = ({ value }) => {
-  console.log("value", value);
-  return createElement("button", {}, value);
-};
-
-const App = () => {
-  const [value, setValue] = useState("");
-
-  return createElement(
-    "div",
-    {},
-    createElement("span", {}, value || 1),
-    createElement("input", {
-      oninput: (e) => {
-        setValue(e.target.value);
-      },
-    }),
-    arr.map((index) => createElement("div", {}, index)),
-    createElement(Component, { value })
-  );
-};
-
-// export { App };
